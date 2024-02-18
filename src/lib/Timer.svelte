@@ -6,14 +6,17 @@
 
 	// Define component logic
 	export let pomodoroDuration = 10;
+	export let longBreakDuration = 10;
 	export let breakDuration = 5;
 	export let autoPlayPomodoro = false;
 	export let autoPlayBreak = false;
+	export let numberOfPomodori = 4;
 
 	let timeLeft = pomodoroDuration;
 	let timer = 0;
 	let inBreak = false;
 	let inPlay = false;
+	let pomodoriCounter = 1;
 	// Function to start the timer
 
 	function startTimer() {
@@ -23,18 +26,26 @@
 			} else {
 				if (inPlay && timeLeft <= 0) {
 					if (inBreak) {
+						// Finishing break
 						console.warn('in brak', timeLeft);
 						appWindow.toggleMaximize();
 						reset();
 						if (!autoPlayPomodoro) {
 							pauseTimer();
 						}
+						pomodoriCounter++;
 					} else {
+						// Finishing pomodoro
 						console.warn('in not in break');
 						inBreak = true;
+						if (pomodoriCounter === numberOfPomodori) {
+							pomodoriCounter = 1;
+							timeLeft = longBreakDuration;
+						}
 						timeLeft = breakDuration;
 						appWindow.toggleMaximize();
 						//autoplay break
+
 						if (!autoPlayBreak) {
 							pauseTimer();
 						}
@@ -91,7 +102,7 @@
 	{:else}
 		<h2>{inBreak ? 'Time to take a break' : "Let's focus"}</h2>
 	{/if}
-
+	Pomodoro {pomodoriCounter} / {numberOfPomodori}
 	<button on:click={playOrPause}>{inPlay ? 'Pause' : 'Play'}</button>
 	<button on:click={() => (timeLeft = 60)}>Reset</button>
 	<p>Time Left: {timeLeft}</p>
