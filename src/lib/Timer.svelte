@@ -5,8 +5,10 @@
 	import { onMount, onDestroy } from 'svelte';
 
 	// Define component logic
-	let pomodoroDuration = 10;
-	let breakDuration = 5;
+	export let pomodoroDuration = 10;
+	export let breakDuration = 5;
+	export let autoPlayPomodoro = false;
+	export let autoPlayBreak = false;
 
 	let timeLeft = pomodoroDuration;
 	let timer = 0;
@@ -24,12 +26,18 @@
 						console.warn('in brak', timeLeft);
 						appWindow.toggleMaximize();
 						reset();
+						if (!autoPlayPomodoro) {
+							pauseTimer();
+						}
 					} else {
 						console.warn('in not in break');
 						inBreak = true;
 						timeLeft = breakDuration;
 						appWindow.toggleMaximize();
 						//autoplay break
+						if (!autoPlayBreak) {
+							pauseTimer();
+						}
 					}
 				} //else {
 				//@ts-checkrval(timer);
@@ -81,7 +89,7 @@
 	{#if inPlay}
 		<h2>{inBreak ? 'Well-deserved break' : 'Stay focus'}</h2>
 	{:else}
-		<h2>Start your timer</h2>
+		<h2>{inBreak ? 'Time to take a break' : "Let's focus"}</h2>
 	{/if}
 
 	<button on:click={playOrPause}>{inPlay ? 'Pause' : 'Play'}</button>
